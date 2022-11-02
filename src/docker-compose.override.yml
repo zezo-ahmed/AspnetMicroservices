@@ -1,6 +1,9 @@
 version: '3.8'
 
 services:
+
+# ------------- ( Databases ) --------------
+
   catalogdb:
     container_name: catalogdb
     restart: always
@@ -10,15 +13,58 @@ services:
         - mongo_data:/data/db
 
 
+  basketdb:
+    container_name: basketdb
+    restart: always
+    ports:
+        - "6379:6379"
+
+
+  discountdb:
+    container_name: discountdb
+    environment:
+        - POSTGRES_USER=admin
+        - POSTGRES_PASSWORD=admin1234
+        - POSTGRES_DB=DiscountDb
+    restart: always
+    ports:
+        - "5432:5432"
+    volumes:
+        - postgres_data:/var/lib/postgressql/data/
+
+# ------------- ( GUI ) --------------
+
+  portainer:
+    container_name: portainer
+    restart: always
+    ports:
+        - "8080:8000"
+        - "9000:9000"
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - portainer_data:/data
+
+
   mongo_gui:
-    container_name: gui
+    container_name: mongo_gui
     restart: always
     ports:
         - "3000:3000"
-    volumes:
-    - "./data:/data/db"
     depends_on:
         - catalogdb
+
+  pgadmin:
+    container_name: pgadmin
+    environment:
+        - PGADMIN_DEFAULT_EMAIL=admin@aspnetrun.com
+        - PGADMIN_DEFAULT_PASSWORD=admin1234
+    restart: always
+    ports:
+        - "5050:80"
+    volumes:
+        - pgadmin_data:/root/.pgadmin
+
+# ------------- ( API ) --------------
 
   catalog.api:
     container_name: catalog.api
@@ -29,3 +75,26 @@ services:
       - "8000:80"
     depends_on:
         - catalogdb
+
+
+  basket.api:
+    container_name: basket.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "CacheSettings:ConnectionString=basketdb:6379"
+    ports:
+      - "8001:80"
+    depends_on:
+        - basketdb
+
+
+  discount.api:
+    container_name: discount.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
+    ports:
+      - "8002:80"
+    depends_on:
+        - discountdb
+
