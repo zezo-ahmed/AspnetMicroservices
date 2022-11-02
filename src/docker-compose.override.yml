@@ -8,29 +8,29 @@ services:
     container_name: catalogdb
     restart: always
     ports:
-        - "27017:27017"
+      - "27017:27017"
     volumes:
-        - mongo_data:/data/db
+      - mongo_data:/data/db
 
 
   basketdb:
     container_name: basketdb
     restart: always
     ports:
-        - "6379:6379"
+      - "6379:6379"
 
 
   discountdb:
     container_name: discountdb
     environment:
-        - POSTGRES_USER=admin
-        - POSTGRES_PASSWORD=admin1234
-        - POSTGRES_DB=DiscountDb
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin1234
+      - POSTGRES_DB=DiscountDb
     restart: always
     ports:
-        - "5432:5432"
+      - "5432:5432"
     volumes:
-        - postgres_data:/var/lib/postgressql/data/
+      - postgres_data:/var/lib/postgressql/data/
 
 # ------------- ( GUI ) --------------
 
@@ -38,31 +38,31 @@ services:
     container_name: portainer
     restart: always
     ports:
-        - "8080:8000"
-        - "9000:9000"
+      - "8080:8000"
+      - "9000:9000"
     volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-        - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
 
 
   mongo_gui:
     container_name: mongo_gui
     restart: always
     ports:
-        - "3000:3000"
+      - "3000:3000"
     depends_on:
-        - catalogdb
+      - catalogdb
 
   pgadmin:
     container_name: pgadmin
     environment:
-        - PGADMIN_DEFAULT_EMAIL=admin@aspnetrun.com
-        - PGADMIN_DEFAULT_PASSWORD=admin1234
+      - PGADMIN_DEFAULT_EMAIL=admin@aspnetrun.com
+      - PGADMIN_DEFAULT_PASSWORD=admin1234
     restart: always
     ports:
-        - "5050:80"
+      - "5050:80"
     volumes:
-        - pgadmin_data:/root/.pgadmin
+      - pgadmin_data:/root/.pgadmin
 
 # ------------- ( API ) --------------
 
@@ -74,7 +74,7 @@ services:
     ports:
       - "8000:80"
     depends_on:
-        - catalogdb
+      - catalogdb
 
 
   basket.api:
@@ -82,10 +82,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "CacheSettings:ConnectionString=basketdb:6379"
+      - "GrpcSettings:DiscountUrl=http://discount.grpc"
     ports:
       - "8001:80"
     depends_on:
-        - basketdb
+      - basketdb
 
 
   discount.api:
@@ -96,5 +97,17 @@ services:
     ports:
       - "8002:80"
     depends_on:
-        - discountdb
+      - discountdb
+
+# ------------- ( Grpc ) --------------
+
+  discount.grpc:
+    container_name: discount.grpc
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
+    ports:
+      - "8003:80"
+    depends_on:
+      - discountdb
 

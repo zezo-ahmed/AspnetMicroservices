@@ -44,10 +44,17 @@ services:
 
 
   discount.api:
-    image: ${DOCKER_REGISTRY-}discountapi
+    image: ahmeds88/discountapi
     build:
       context: .
       dockerfile: Services/Discount/Discount.API/Dockerfile
+
+
+  discount.grpc:
+    image: ahmeds88/discountgrpc
+    build:
+      context: .
+      dockerfile: Services/Discount/Discount.Grpc/Dockerfile
 
 # ------------ ( Volumes ) ---------------
 
@@ -56,5 +63,6 @@ volumes:
   portainer_data:
   postgres_data:
   pgadmin_data:
+
 
 
