@@ -14,6 +14,14 @@ services:
     image: postgres:alpine
 
 
+  orderdb:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+
+
   mongo_gui:
     image: mongoclient/mongoclient
 
@@ -56,13 +64,31 @@ services:
       context: .
       dockerfile: Services/Discount/Discount.Grpc/Dockerfile
 
+
+  ordering.api:
+    image: ahmeds88/orderingapi
+    build:
+      context: .
+      dockerfile: Services/Ordering/API/Ordering.API/Dockerfile
+
+
+  ocelotapigw:
+    image: ${DOCKER_REGISTRY-}ocelotapigw
+    build:
+      context: .
+      dockerfile: ApiGateways/OcelotApiGw/Dockerfile
+
 # ------------ ( Volumes ) ---------------
+
+
 
 volumes:
   mongo_data:
   portainer_data:
   postgres_data:
   pgadmin_data:
+
+
 
 
 

@@ -32,6 +32,24 @@ services:
     volumes:
       - postgres_data:/var/lib/postgressql/data/
 
+
+  orderdb:
+    container_name: orderdb
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "P@55w0rd!"
+    restart: always
+    ports:
+      - "1421:1433"
+
+
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
 # ------------- ( GUI ) --------------
 
   portainer:
@@ -52,6 +70,7 @@ services:
       - "3000:3000"
     depends_on:
       - catalogdb
+
 
   pgadmin:
     container_name: pgadmin
@@ -83,10 +102,12 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - "CacheSettings:ConnectionString=basketdb:6379"
       - "GrpcSettings:DiscountUrl=http://discount.grpc"
+      - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
     ports:
       - "8001:80"
     depends_on:
       - basketdb
+      - rabbitmq
 
 
   discount.api:
@@ -98,6 +119,19 @@ services:
       - "8002:80"
     depends_on:
       - discountdb
+
+
+  ordering.api:
+    container_name: ordering.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings:OrderingConnectionString=Server=orderdb;Database=OrderDb;User Id=sa;Password=P@55w0rd!;Encrypt=True;TrustServerCertificate=True;"
+      - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+    ports:
+      - "8004:80"
+    depends_on:
+      - orderdb
+      - rabbitmq
 
 # ------------- ( Grpc ) --------------
 
@@ -111,3 +145,15 @@ services:
     depends_on:
       - discountdb
 
+
+  ocelotapigw:
+    container_name: ocelotapigw
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8010:80"
+    depends_on:
+      - catalog.api
+      - basket.api
+      - discount.api
+      - ordering.api

@@ -1,15 +1,9 @@
 using Discount.Grpc.Services;
 using Discount.Grpc.Extensions;
-using Discount.Grpc.Repositories;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
-
-builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
-builder.Services.AddGrpc();
+builder.Services.AddDiscountGrpcServices();
 
 var app = builder.Build();
 

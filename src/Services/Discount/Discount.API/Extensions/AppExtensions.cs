@@ -4,7 +4,6 @@ namespace Discount.API.Extensions
 {
     public static class AppExtensions
     {
-        private enum NumberOfSeedData { MaxLimit = 50 }
         public static void MigrateDatabase<TContext>(this WebApplication app, int? retry = 0)
         {
             int retryForAvailability = retry.Value;
@@ -39,7 +38,7 @@ namespace Discount.API.Extensions
                 {
                     logger.LogError(ex, "An error occurred while migrating the postgres database");
                     
-                    if(retryForAvailability < (int)NumberOfSeedData.MaxLimit)
+                    if(retryForAvailability < 50)
                     {
                         retryForAvailability++;
                         Thread.Sleep(3000);

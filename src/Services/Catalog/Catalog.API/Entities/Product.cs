@@ -5,10 +5,6 @@ namespace Catalog.API.Entities
 {
     public class Product
     {
-        // يشير إلى حقل (_id)
-        // الذي يتم إنشاءه تلقائياً في قاعدة بيانات
-        // MongoDB
-
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }

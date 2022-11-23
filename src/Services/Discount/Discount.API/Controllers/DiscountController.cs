@@ -16,11 +16,11 @@ namespace Discount.API.Controllers
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        [HttpGet("{productNane}", Name = "GetDiscount")]
+        [HttpGet("{productName}", Name = "GetDiscount")]
         [ProducesResponseType(typeof(Coupon), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<Coupon>> GetDiscount(string productNane)
+        public async Task<ActionResult<Coupon>> GetDiscount(string productName)
         {
-            return Ok(await _repository.GetDiscount(productNane));
+            return Ok(await _repository.GetDiscount(productName));
         }
 
         [HttpPost]
@@ -28,7 +28,7 @@ namespace Discount.API.Controllers
         public async Task<ActionResult<Coupon>> CreateDiscount([FromBody] Coupon coupon)
         {
             await _repository.CreateDiscount(coupon);
-            return CreatedAtRoute("GetDiscount", new { productNane = coupon.ProductName }, coupon);
+            return CreatedAtRoute("GetDiscount", new { ProductName = coupon.ProductName }, coupon);
         }
 
         [HttpPut]
@@ -38,11 +38,11 @@ namespace Discount.API.Controllers
             return Ok(await _repository.UpdateDiscount(coupon));
         }
 
-        [HttpDelete("{productNane}", Name = "DeleteDiscount")]
+        [HttpDelete("{productName}", Name = "DeleteDiscount")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<bool>> DeleteDiscount(string productNane)
+        public async Task<ActionResult<bool>> DeleteDiscount(string productName)
         {
-            return Ok(await _repository.DeleteDiscount(productNane));
+            return Ok(await _repository.DeleteDiscount(productName));
         }
     }
 }

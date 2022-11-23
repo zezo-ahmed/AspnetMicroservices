@@ -57,7 +57,7 @@ namespace Catalog.API.Repositories
         {
             ReplaceOneResult? updateResult = await _context
                                                         .Products
-                                                        .ReplaceOneAsync(filter: g => g.Id == product.Id, replacement: product);
+                                                        .ReplaceOneAsync(filter: p => p.Id == product.Id, replacement: product);
 
             return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0;
         }

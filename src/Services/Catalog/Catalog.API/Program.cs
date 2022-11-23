@@ -1,13 +1,9 @@
-using Catalog.API.Data;
-using Catalog.API.Repositories;
+using Catalog.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddScoped<ICatalogContext, CatalogContext>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-
-
+builder.Services.AddCatalogServices();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
