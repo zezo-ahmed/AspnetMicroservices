@@ -23,7 +23,7 @@ namespace Ordering.API.EventBusConsumer
         {
             var command = _mapper.Map<ChechoutOrderCommand>(context.Message);
 
-            var orderId = await _mediator.Send(command);
+            int orderId = await _mediator.Send(command);
 
             _logger.LogInformation("BasketCheckoutEvent consumed successfully. Created Order Id: {newOrderId}", orderId);
         }

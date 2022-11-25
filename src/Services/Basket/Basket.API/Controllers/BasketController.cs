@@ -14,15 +14,15 @@ namespace Basket.API.Controllers
     public class BasketController : ControllerBase
     {
         private readonly IMapper _mapper;
+        private readonly IPublishEndpoint _publisher;
         private readonly IBasketRepository _repository;
-        private readonly IPublishEndpoint _publishEndpoint;
         private readonly IDiscountGrpcService _discountGrpcService;
 
-        public BasketController(IMapper mapper, IBasketRepository repository, IPublishEndpoint publishEndpoint, IDiscountGrpcService discountGrpcService)
+        public BasketController(IMapper mapper, IBasketRepository repository, IPublishEndpoint publisher, IDiscountGrpcService discountGrpcService)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
             _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
         }
 
@@ -67,7 +67,7 @@ namespace Basket.API.Controllers
 
             var eventMessage = _mapper.Map<BasketCheckoutEvent>(basketCheckout);
             eventMessage.TotalPrice = basket.TotalPrice;
-            await _publishEndpoint.Publish(eventMessage);
+            await _publisher.Publish(eventMessage);
 
             await _repository.DeleteBasket(basket.UserName);
 
