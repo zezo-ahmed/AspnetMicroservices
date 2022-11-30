@@ -73,7 +73,7 @@ services:
 
 
   ocelotapigw:
-    image: ${DOCKER_REGISTRY-}ocelotapigw
+    image: ahmeds88/ocelotapigw
     build:
       context: .
       dockerfile: ApiGateways/OcelotApiGw/Dockerfile
@@ -82,11 +82,18 @@ services:
 
 
 
+  shopping.aggregator:
+    image: ahmeds88/shoppingaggregator
+    build:
+      context: .
+      dockerfile: ApiGateways/Shopping.Aggregator/Dockerfile
+
 volumes:
   mongo_data:
   portainer_data:
   postgres_data:
   pgadmin_data:
+
 
 
 
