@@ -18,7 +18,7 @@ namespace AspnetRunBasics.Services
 
         public async Task<IEnumerable<OrderResponseModel>> GetOrdersByUserName(string userName)
         {
-            var response = await _client.GetAsync($"/Order/userName?userName={userName}");
+            var response = await _client.GetAsync($"/Order/userName/{userName}");
 
             return await response.ReadContentAs<List<OrderResponseModel>>();
         }
